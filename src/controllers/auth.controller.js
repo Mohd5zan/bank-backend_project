@@ -1,5 +1,6 @@
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const emailServices = require("../services/email.service");
 
 /**
  * - User register controller
@@ -31,7 +32,7 @@ async function userRegisterController(req, res) {
   );
   res.cookie("token", token);
 
-  return res.status(201).json({
+  res.status(201).json({
     Message: "User Created Successfully",
     User: {
       id: user._id,
@@ -39,6 +40,8 @@ async function userRegisterController(req, res) {
       email: user.email,
     },
   });
+
+  await emailServices.sendRegistrationEmail(user.email, user.name);
 }
 
 /**
@@ -48,9 +51,11 @@ async function userRegisterController(req, res) {
 async function userLoginController(req, res) {
   const { name, email, password } = req.body;
 
-  const User = await userModel.findOne({
-    $or: [{ name }, { email }],
-  }).select("+password");
+  const User = await userModel
+    .findOne({
+      $or: [{ name }, { email }],
+    })
+    .select("+password");
   if (!User) {
     return res.status(401).json({
       Message: "Invalid credentials",
@@ -79,6 +84,5 @@ async function userLoginController(req, res) {
     },
   });
 }
-
 
 module.exports = { userRegisterController, userLoginController };
