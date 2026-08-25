@@ -18,26 +18,26 @@ transporter.verify((error, success) => {
 });
 
 const sendEmail = async (to, subject, text, html) => {
-    try {
-        const info = await transporter.sendMail({
-            from: `Backend Ledger <${process.env.EMAIL_USER}>`, // sender address
-            to, // list of receivers
-            subject, // Subject line
-            text, // plain text body
-            html, // html body
-        });
+  try {
+    const info = await transporter.sendMail({
+      from: `Backend Ledger <${process.env.EMAIL_USER}>`, // sender address
+      to, // list of receivers
+      subject, // Subject line
+      text, // plain text body
+      html, // html body
+    });
 
-        console.log('Message sent: %s', info.messageId);
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    } catch (error) {
-        console.error('Error sending email:', error);
-    }
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
 
 async function sendRegistrationEmail(userEmail, name) {
-    const subject = 'Welcome to Backend Ledger!';
+  const subject = "Welcome to Backend Ledger!";
 
-    const text = `
+  const text = `
 Hi ${name},
 
 Welcome to Backend Ledger! 🎉
@@ -56,7 +56,7 @@ Best regards,
 The Backend Ledger Team
 `;
 
-    const html = `
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,10 +126,171 @@ The Backend Ledger Team
 </html>
 `;
 
-    await sendEmail(userEmail, subject, text, html);
+  await sendEmail(userEmail, subject, text, html);
 }
 
+async function sendTransactionEmail(userEmail, name, amount, toAccount) {
+  const subject = "Transaction Successful";
+
+  const text = `
+Hello ${name},
+
+Your transaction has been completed successfully.
+
+Transaction Details:
+- Amount: ₹${amount}
+- Transferred To: ${toAccount}
+
+Thank you for banking with us.
+
+Regards,
+Your Bank Team
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Successful</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #ddd;">
+        
+        <h2 style="color: #28a745; text-align: center;">
+            ✅ Transaction Successful
+        </h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>Your transaction has been completed successfully.</p>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Amount</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">₹${amount}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Transferred To</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${toAccount}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Status</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd; color: green;">
+                    Successful
+                </td>
+            </tr>
+        </table>
+
+        <p>Thank you for choosing our banking services.</p>
+
+        <p>
+            Regards,<br>
+            <strong>Your Bank Team</strong>
+        </p>
+
+        <hr>
+
+        <p style="font-size: 12px; color: #777;">
+            This is an automated email. Please do not reply to this message.
+        </p>
+    </div>
+</body>
+</html>
+`;
+
+  await sendEmail(userEmail, subject, text, html);
+}
+async function sendTransactionFailureEmail(
+  userEmail,
+  name,
+  amount,
+  toAccount,
+  reason,
+) {
+  const subject = "Transaction Failed";
+
+  const text = `
+Hello ${name},
+
+Unfortunately, your transaction could not be completed.
+
+Transaction Details:
+- Amount: ₹${amount}
+- Intended Recipient: ${toAccount}
+- Status: Failed
+- Reason: ${reason}
+
+No amount has been deducted from your account. If the issue persists, please contact our support team.
+
+Regards,
+Your Bank Team
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Failed</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #ddd;">
+
+        <h2 style="color: #dc3545; text-align: center;">
+            ❌ Transaction Failed
+        </h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>We regret to inform you that your transaction could not be completed.</p>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Amount</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">₹${amount}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Intended Recipient</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${toAccount}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Status</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd; color: #dc3545;">
+                    Failed
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Reason</strong></td>
+                <td style="padding: 10px; border: 1px solid #ddd;">${reason}</td>
+            </tr>
+        </table>
+
+        <p>
+            Please verify the transaction details and try again. If the problem continues, contact our support team for assistance.
+        </p>
+
+        <p>
+            Regards,<br>
+            <strong>Your Bank Team</strong>
+        </p>
+
+        <hr>
+
+        <p style="font-size: 12px; color: #777;">
+            This is an automated email. Please do not reply to this message.
+        </p>
+
+    </div>
+</body>
+</html>
+`;
+
+  await sendEmail(userEmail, subject, text, html);
+}
 
 module.exports = {
-    sendRegistrationEmail
+  sendRegistrationEmail,
+  sendTransactionEmail,
+  sendTransactionFailureEmail
 };
