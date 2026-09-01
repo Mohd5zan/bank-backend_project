@@ -1,7 +1,16 @@
-# Banking Backend API
+# Banking Backend Ledger
 
 A secure banking backend built with **Node.js, Express.js, and MongoDB**.
 The project provides REST APIs for user authentication, bank accounts, balance management, and money transfers.
+
+
+## What it does
+Users can register, log in, and log out securely.
+Logged-in users can create an account, view all their accounts, and check the balance of any account.
+Users can send money to another account, and view their transaction history.
+Balances are not stored directly — they're calculated by adding up all the transactions for an account. This avoids bugs where the stored balance and the real balance drift apart.
+Users get an email when they register, and when a transaction succeeds or fails.
+
 
 ## 🚀 Features
 
